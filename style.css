@@ -1,0 +1,273 @@
+:root {
+  --red: #e30613;
+  --red-dark: #bd0010;
+  --bg: #f7f7f7;
+  --card: #ffffff;
+  --text: #111111;
+  --muted: #777777;
+  --border: #e5e5e5;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  width: min(680px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 42px 0 28px;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+h1, h2, p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 30px;
+  letter-spacing: -0.8px;
+}
+
+.topbar p {
+  color: var(--muted);
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.country {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 170px;
+}
+
+.country span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+select,
+.grade-input,
+.weight-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 11px 12px;
+  outline: none;
+}
+
+select:focus,
+input:focus {
+  border-color: var(--red);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+h2 {
+  font-size: 17px;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--red);
+  padding: 4px;
+  font-size: 13px;
+}
+
+.grade-row {
+  display: grid;
+  grid-template-columns: 1fr 105px 38px;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.remove-button {
+  border: 1px solid var(--border);
+  background: white;
+  color: #888;
+  border-radius: 10px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.remove-button:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.add-button {
+  width: 100%;
+  border: 1px dashed #ccc;
+  background: white;
+  color: var(--red);
+  border-radius: 10px;
+  padding: 11px;
+  margin-top: 4px;
+}
+
+.add-button:hover {
+  border-color: var(--red);
+  background: #fff8f8;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--red);
+  color: white;
+  border-radius: 12px;
+  padding: 17px;
+  margin-top: 18px;
+}
+
+.result span {
+  font-size: 14px;
+}
+
+.result strong {
+  font-size: 27px;
+}
+
+#savedCount {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 12px;
+}
+
+.history-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.history-value {
+  font-weight: 700;
+}
+
+.history-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.history-delete {
+  border: 0;
+  background: transparent;
+  color: #999;
+  font-size: 18px;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+  padding: 10px 0;
+}
+
+@media (max-width: 560px) {
+  .app {
+    padding-top: 24px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .country {
+    width: 100%;
+  }
+
+  .grade-row {
+    grid-template-columns: 1fr 90px 38px;
+  }
+}
+
+
+.github-link {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #111;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.github-link:hover {
+  transform: translateY(-2px);
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.github-link svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+}
