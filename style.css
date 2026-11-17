@@ -1,239 +1,359 @@
-const countries = {
-  ch: {
-    name: "Schweiz",
-    min: 1,
-    max: 6,
-    step: 0.1,
-    defaultGrade: 5,
-    higherIsBetter: true,
-    format: value => value.toFixed(2)
-  },
-  de: {
-    name: "Deutschland",
-    min: 1,
-    max: 6,
-    step: 0.1,
-    defaultGrade: 2,
-    higherIsBetter: false,
-    format: value => value.toFixed(2)
-  },
-  at: {
-    name: "Österreich",
-    min: 1,
-    max: 5,
-    step: 0.1,
-    defaultGrade: 2,
-    higherIsBetter: false,
-    format: value => value.toFixed(2)
-  },
-  fr: {
-    name: "Frankreich",
-    min: 0,
-    max: 20,
-    step: 0.1,
-    defaultGrade: 12,
-    higherIsBetter: true,
-    format: value => value.toFixed(2)
-  },
-  us: {
-    name: "USA (GPA)",
-    min: 0,
-    max: 4,
-    step: 0.01,
-    defaultGrade: 3,
-    higherIsBetter: true,
-    format: value => value.toFixed(2)
-  },
-  uk: {
-    name: "Grossbritannien (%)",
-    min: 0,
-    max: 100,
-    step: 1,
-    defaultGrade: 70,
-    higherIsBetter: true,
-    format: value => `${Math.round(value)}%`
+/* Grundlayout */
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #172033;
+  background: #f3f6fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  padding: 48px 20px;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(196, 220, 255, 0.5), transparent 38%),
+    #f3f6fb;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  width: min(100%, 620px);
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.topbar h1 {
+  margin: 0;
+  color: #172033;
+  font-size: clamp(2rem, 5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1.05;
+}
+
+.topbar h4 {
+  margin: 8px 0 0;
+  color: #748097;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.country {
+  display: grid;
+  gap: 6px;
+  color: #67738a;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.country select {
+  min-width: 150px;
+  padding: 10px 34px 10px 12px;
+  border: 1px solid #dfe5ef;
+  border-radius: 11px;
+  outline: none;
+  background: #fff;
+  color: #172033;
+  cursor: pointer;
+}
+
+.country select:focus,
+.grade-input:focus,
+.weight-input:focus {
+  border-color: #6687f5;
+  box-shadow: 0 0 0 3px rgba(102, 135, 245, 0.15);
+}
+
+.card {
+  padding: 24px;
+  border: 1px solid rgba(222, 229, 240, 0.9);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(34, 52, 86, 0.06);
+}
+
+.calculator {
+  margin-bottom: 18px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.text-button {
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: #78849a;
+  font-size: 0.85rem;
+}
+
+.text-button:hover {
+  color: #d04457;
+}
+
+#gradeList {
+  display: grid;
+  gap: 10px;
+}
+
+.grade-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 40px;
+  gap: 9px;
+}
+
+.grade-input,
+.weight-input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid #e1e6ef;
+  border-radius: 11px;
+  outline: none;
+  background: #fbfcfe;
+  color: #172033;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.grade-input:focus,
+.weight-input:focus {
+  background: #fff;
+}
+
+.grade-input::placeholder,
+.weight-input::placeholder {
+  color: #9aa4b6;
+}
+
+.remove-button,
+.history-delete {
+  display: grid;
+  width: 40px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: #fff1f2;
+  color: #d04457;
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.remove-button:hover,
+.history-delete:hover {
+  transform: translateY(-1px);
+  background: #ffe1e5;
+}
+
+.add-button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #cbd5e5;
+  border-radius: 11px;
+  background: #f8faff;
+  color: #4968d4;
+  font-weight: 650;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.add-button:hover {
+  border-color: #8da3f6;
+  background: #f0f4ff;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  padding: 17px 18px;
+  border-radius: 14px;
+  background: #f2f5ff;
+  color: #53617a;
+}
+
+.result span {
+  font-weight: 600;
+}
+
+.result strong {
+  color: #3558d4;
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.history .section-head {
+  margin-bottom: 14px;
+}
+
+.history .section-head > span {
+  display: grid;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  place-items: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4968d4;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.history-list {
+  display: grid;
+  gap: 9px;
+}
+
+.empty {
+  padding: 18px 12px;
+  border: 1px dashed #e1e6ef;
+  border-radius: 12px;
+  color: #8a95a8;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 13px;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+  background: #fcfdff;
+}
+
+.history-main {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.history-value {
+  color: #25314a;
+  font-size: 1rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-meta {
+  overflow: hidden;
+  color: #8994a7;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-delete {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  font-size: 1.2rem;
+}
+
+.github-link {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin: 20px auto 0;
+  place-items: center;
+  border: 1px solid #e2e7f0;
+  border-radius: 50%;
+  background: #fff;
+  color: #56627a;
+  transition: color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.github-link:hover {
+  transform: translateY(-2px);
+  color: #172033;
+  box-shadow: 0 6px 16px rgba(34, 52, 86, 0.1);
+}
+
+.github-link svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 28px 14px;
   }
-};
 
-const countrySelect = document.getElementById("countrySelect");
-const gradeList = document.getElementById("gradeList");
-const average = document.getElementById("average");
-const historyList = document.getElementById("historyList");
-const savedCount = document.getElementById("savedCount");
-const template = document.getElementById("gradeTemplate");
-
-let currentCountry = localStorage.getItem("grade-country") || "ch";
-let grades = JSON.parse(localStorage.getItem("grade-current") || "[]");
-let history = JSON.parse(localStorage.getItem("grade-history") || "[]");
-
-Object.entries(countries).forEach(([key, country]) => {
-  const option = document.createElement("option");
-  option.value = key;
-  option.textContent = country.name;
-  countrySelect.appendChild(option);
-});
-
-countrySelect.value = currentCountry;
-
-if (!grades.length) {
-  grades = [{ value: "", weight: 1 }];
-}
-
-function saveCurrent() {
-  localStorage.setItem("grade-current", JSON.stringify(grades));
-  localStorage.setItem("grade-country", currentCountry);
-}
-
-function render() {
-  const country = countries[currentCountry];
-  countrySelect.value = currentCountry;
-  gradeList.innerHTML = "";
-
-  grades.forEach((grade, index) => {
-    const row = template.content.firstElementChild.cloneNode(true);
-    const gradeInput = row.querySelector(".grade-input");
-    const weightInput = row.querySelector(".weight-input");
-
-    gradeInput.min = country.min;
-    gradeInput.max = country.max;
-    gradeInput.step = country.step;
-    gradeInput.value = grade.value;
-    gradeInput.placeholder = `${country.min}–${country.max}`;
-
-    weightInput.value = grade.weight;
-
-    gradeInput.addEventListener("input", () => {
-      grades[index].value = gradeInput.value;
-      calculate();
-      saveCurrent();
-    });
-
-    weightInput.addEventListener("input", () => {
-      grades[index].weight = weightInput.value;
-      calculate();
-      saveCurrent();
-    });
-
-    row.querySelector(".remove-button").addEventListener("click", () => {
-      grades.splice(index, 1);
-      if (!grades.length) grades.push({ value: "", weight: 1 });
-      saveCurrent();
-      render();
-    });
-
-    gradeList.appendChild(row);
-  });
-
-  calculate();
-  renderHistory();
-}
-
-function calculate() {
-  const valid = grades.filter(g => {
-    const value = Number(g.value);
-    const weight = Number(g.weight);
-    const c = countries[currentCountry];
-    return Number.isFinite(value) &&
-      value >= c.min &&
-      value <= c.max &&
-      Number.isFinite(weight) &&
-      weight > 0;
-  });
-
-  if (!valid.length) {
-    average.textContent = "–";
-    return;
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
   }
 
-  const totalWeight = valid.reduce((sum, g) => sum + Number(g.weight), 0);
-  const total = valid.reduce((sum, g) => sum + Number(g.value) * Number(g.weight), 0);
-  const result = total / totalWeight;
-
-  average.textContent = countries[currentCountry].format(result);
-}
-
-function saveAverage() {
-  const text = average.textContent;
-  if (text === "–") return;
-
-  const entry = {
-    value: text,
-    country: currentCountry,
-    countryName: countries[currentCountry].name,
-    date: new Date().toLocaleString("de-CH", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    })
-  };
-
-  history.unshift(entry);
-  history = history.slice(0, 30);
-  localStorage.setItem("grade-history", JSON.stringify(history));
-  renderHistory();
-}
-
-function renderHistory() {
-  savedCount.textContent = history.length;
-
-  if (!history.length) {
-    historyList.innerHTML = '<div class="empty">Noch keine gespeicherten Ergebnisse</div>';
-    return;
+  .country {
+    width: 100%;
   }
 
-  historyList.innerHTML = "";
+  .country select {
+    width: 100%;
+  }
 
-  history.forEach((item, index) => {
-    const row = document.createElement("div");
-    row.className = "history-item";
+  .card {
+    padding: 19px;
+    border-radius: 16px;
+  }
 
-    row.innerHTML = `
-      <div class="history-main">
-        <span class="history-value">${escapeHtml(item.value)}</span>
-        <span class="history-meta">${escapeHtml(item.countryName)} · ${escapeHtml(item.date)}</span>
-      </div>
-      <button class="history-delete" type="button" aria-label="Eintrag löschen">×</button>
-    `;
+  .grade-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 38px;
+    gap: 7px;
+  }
 
-    row.querySelector(".history-delete").addEventListener("click", () => {
-      history.splice(index, 1);
-      localStorage.setItem("grade-history", JSON.stringify(history));
-      renderHistory();
-    });
+  .grade-input,
+  .weight-input {
+    padding: 11px 9px;
+  }
 
-    historyList.appendChild(row);
-  });
+  .remove-button {
+    width: 38px;
+  }
 }
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-document.getElementById("addGrade").addEventListener("click", () => {
-  grades.push({ value: "", weight: 1 });
-  saveCurrent();
-  render();
-});
-
-document.getElementById("clearAll").addEventListener("click", () => {
-  grades = [{ value: "", weight: 1 }];
-  saveCurrent();
-  render();
-});
-
-countrySelect.addEventListener("change", () => {
-  saveAverage();
-  currentCountry = countrySelect.value;
-  grades = [{ value: "", weight: 1 }];
-  saveCurrent();
-  render();
-});
-
-render();
