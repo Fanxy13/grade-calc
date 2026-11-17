@@ -1,132 +1,65 @@
 <!DOCTYPE html>
-<html lang="de-CH">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grade Calc</title>
+  <meta name="description" content="Ein einfacher Notenrechner für verschiedene Länder.">
+  <title>Notenrechner</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .kw-card {
-      max-width: 400px;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .kw-card label { display: block; margin-top: 1rem; font-weight: 600; }
-    .kw-card input, .kw-card button { padding: 0.4rem; margin-top: 0.3rem; }
-    .kw-resultat { margin-top: 1.2rem; }
-    .kw-resultat strong { font-size: 1.3em; }
-    .kw-bereich { opacity: 0.7; font-size: 0.9em; }
-  </style>
 </head>
 <body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>Grade Calc</h1>
+        <h4>Calc is slang for Calculator✌️</h4>
+      </div>
 
-  <!-- ===== DEIN BESTEHENDER NOTENRECHNER ===== -->
-  <!-- Hier den bisherigen Inhalt aus deinem <body> einfügen (ohne <script>-Tags) -->
-  <!-- ========================================= -->
+      <label class="country">
+        <span>Land</span>
+        <select id="countrySelect"></select>
+      </label>
+    </header>
 
-  <!-- ===== KALENDERWOCHEN-RECHNER ===== -->
-  <section id="kw-rechner" class="kw-card">
-    <h2>Kalenderwochen-Rechner</h2>
+    <section class="calculator card">
+      <div class="section-head">
+        <h2>Noten</h2>
+        <button id="clearAll" class="text-button" type="button">Alle löschen</button>
+      </div>
 
-    <label for="kw-datum">Datum</label>
-    <input type="date" id="kw-datum">
-    <button type="button" id="kw-heute">Heute</button>
+      <div id="gradeList"></div>
 
-    <label for="kw-schulstart">Schuljahresbeginn</label>
-    <input type="date" id="kw-schulstart">
+      <button id="addGrade" class="add-button" type="button">+ Note hinzufügen</button>
 
-    <div id="kw-resultat" class="kw-resultat"></div>
-  </section>
+      <div class="result">
+        <span>Durchschnitt</span>
+        <strong id="average">–</strong>
+      </div>
+    </section>
+
+    <section class="history card">
+      <div class="section-head">
+        <h2>Gespeicherte Noten</h2>
+        <span id="savedCount">0</span>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </section>
+
+  <a class="github-link" href="https://github.com/Fanxy13" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profil">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.34-1.77-1.34-1.77-1.09-.75.08-.74.08-.74 1.2.08 1.84 1.23 1.84 1.23 1.07 1.83 2.8 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.76.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/>
+    </svg>
+  </a>
+  </main>
+
+  <template id="gradeTemplate">
+    <div class="grade-row">
+      <input class="grade-input" type="number" step="0.1" inputmode="decimal" placeholder="Note">
+      <input class="weight-input" type="number" step="0.1" min="0.1" value="1" inputmode="decimal" placeholder="Gewicht">
+      <button class="remove-button" type="button" aria-label="Note löschen">×</button>
+    </div>
+  </template>
 
   <script src="script.js"></script>
-  <script>
-    (() => {
-      const TAG = 86400000;
-      const WOCHENTAGE = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
-
-      const datumInput = document.getElementById("kw-datum");
-      const startInput = document.getElementById("kw-schulstart");
-      const heuteBtn = document.getElementById("kw-heute");
-      const resultat = document.getElementById("kw-resultat");
-
-      const parse = (s) => {
-        const [y, m, d] = s.split("-").map(Number);
-        return new Date(Date.UTC(y, m - 1, d));
-      };
-      const toInput = (d) => d.toISOString().slice(0, 10);
-      const format = (d) => d.toLocaleDateString("de-CH", { timeZone: "UTC" });
-      const heuteUTC = () => {
-        const h = new Date();
-        return new Date(Date.UTC(h.getFullYear(), h.getMonth(), h.getDate()));
-      };
-
-      const montagDerWoche = (date) => {
-        const d = new Date(date);
-        d.setUTCDate(d.getUTCDate() - (d.getUTCDay() || 7) + 1);
-        return d;
-      };
-
-      // ISO-8601-Kalenderwoche
-      const isoWoche = (date) => {
-        const d = new Date(date);
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-        const jahrStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-        return {
-          woche: Math.ceil(((d - jahrStart) / TAG + 1) / 7),
-          jahr: d.getUTCFullYear()
-        };
-      };
-
-      const schulwoche = (date, start) =>
-        Math.round((montagDerWoche(date) - montagDerWoche(start)) / (7 * TAG)) + 1;
-
-      // Standard: Montag der Woche mit dem 15. August des aktuellen Schuljahres
-      const standardSchulstart = () => {
-        const h = new Date();
-        const jahr = h.getMonth() >= 7 ? h.getFullYear() : h.getFullYear() - 1;
-        return toInput(montagDerWoche(new Date(Date.UTC(jahr, 7, 15))));
-      };
-
-      const berechnen = () => {
-        if (!datumInput.value) {
-          resultat.textContent = "Bitte ein Datum wählen.";
-          return;
-        }
-        const datum = parse(datumInput.value);
-        const { woche, jahr } = isoWoche(datum);
-        const mo = montagDerWoche(datum);
-        const so = new Date(mo.getTime() + 6 * TAG);
-
-        let schulText = "Kein Schuljahresbeginn gesetzt.";
-        if (startInput.value) {
-          const sw = schulwoche(datum, parse(startInput.value));
-          schulText = sw >= 1 ? `Schulwoche <strong>${sw}</strong>` : "Vor Schuljahresbeginn";
-        }
-
-        resultat.innerHTML = `
-          <p>${WOCHENTAGE[datum.getUTCDay()]}, ${format(datum)}</p>
-          <p>Kalenderwoche <strong>${woche}</strong> (${jahr})</p>
-          <p>${schulText}</p>
-          <p class="kw-bereich">Woche: ${format(mo)} – ${format(so)}</p>`;
-      };
-
-      startInput.value = localStorage.getItem("kw-schulstart") || standardSchulstart();
-      datumInput.value = toInput(heuteUTC());
-
-      datumInput.addEventListener("input", berechnen);
-      startInput.addEventListener("input", () => {
-        localStorage.setItem("kw-schulstart", startInput.value);
-        berechnen();
-      });
-      heuteBtn.addEventListener("click", () => {
-        datumInput.value = toInput(heuteUTC());
-        berechnen();
-      });
-
-      berechnen();
-    })();
-  </script>
 </body>
 </html>
